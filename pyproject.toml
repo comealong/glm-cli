@@ -1,0 +1,19 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "glm-cli"
+version = "0.1.0"
+description = "CLI client for Zhipu GLM-4.6V-Flash"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "zai-sdk>=0.2.3",
+]
+
+[project.scripts]
+glm = "glm_cli.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/glm_cli"]
