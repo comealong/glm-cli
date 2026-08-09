@@ -10,6 +10,29 @@ from typing import Any
 MODEL = "glm-4.6v-flash"
 
 
+def _force_utf8_stdio() -> None:
+    """非终端流默认强制 UTF-8；终端流与显式指定编码都保留原状。
+
+    三种情况分而治之：
+
+    1. 交互终端（isatty()）：交给 Python 自行处理。现代 Windows 控制台
+       输出走 WriteConsoleW（UTF-16），与当前代码页无关，因此即使是
+       chcp 936 的 GBK 控制台也能正确显示中文和 emoji；旧版代码页行为
+       也维持原样，不强制改写。
+    2. 调用方通过 PYTHONIOENCODING 显式指定了编码（例如下游管道确实
+       要求 GBK）：尊重它，不覆盖。
+    3. 其余非终端流（如被 Claude 等 Agent 以管道调用）：Python 会退化为
+       系统 ANSI 代码页（GBK），GBK 编不出 emoji 会抛 UnicodeEncodeError、
+       纯中文也会被按 UTF-8 读取的一方解析成乱码。此时没有"目标终端"可
+       探测，UTF-8 是唯一合理约定，强制切 UTF-8。
+    """
+    if os.environ.get("PYTHONIOENCODING"):
+        return
+    for stream in (sys.stdin, sys.stdout, sys.stderr):
+        if stream is not None and hasattr(stream, "reconfigure") and not stream.isatty():
+            stream.reconfigure(encoding="utf-8", errors="replace")
+
+
 def _api_key() -> str:
     key = os.getenv("ZAI_API_KEY")
     if not key:
@@ -203,6 +226,8 @@ def _normal_response(response: Any, show_thinking: bool) -> None:
 
 
 def main() -> None:
+    _force_utf8_stdio()
+
     parser = _make_parser()
     args = parser.parse_args()
 
