@@ -120,17 +120,17 @@ def _get_prompt(args: argparse.Namespace) -> str:
 
 def _make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="glm46v",
+        prog="glm",
         description="使用智谱 GLM-4.6V-Flash 的命令行客户端",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=r'''
 示例:
-  glm46v "你好，介绍一下你自己"
-  glm46v -i screenshot.png "分析这张图片"
-  glm46v -i https://example.com/a.png "图片里有什么？"
-  glm46v -i a.png -i b.png "比较两张图片"
-  glm46v --thinking disabled "快速回答：1+1等于几？"
-  echo "总结这段文字" | glm46v
+  glm "你好，介绍一下你自己"
+  glm -i screenshot.png "分析这张图片"
+  glm -i https://example.com/a.png "图片里有什么？"
+  glm -i a.png -i b.png "比较两张图片"
+  glm --thinking disabled "快速回答：1+1等于几？"
+  echo "总结这段文字" | glm
 
 Windows PowerShell 设置 API Key:
   $env:ZAI_API_KEY="你的_API_Key"
